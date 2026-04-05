@@ -21,6 +21,7 @@ class ActiveCall:
 class Switchboard:
     def __init__(self) -> None:
         self._active_calls: list[ActiveCall] = []
+        self._cross_border_calls: list[ActiveCall] = []
 
     def register_call(self, raw_call: str) -> ActiveCall:
         from app import LocalUser, ForeignUser
@@ -32,10 +33,12 @@ class Switchboard:
         receiver = create_user(receiver_id, receiver_name, receiver_phone)
         call = ActiveCall(caller, receiver)
         self._active_calls.append(call)
+        if caller.user_type() != receiver.user_type():
+            self._cross_border_calls.append(call)
         return call
 
     def get_active_calls_count(self) -> int:
         return len(self._active_calls)
 
     def get_cross_border_calls_count(self) -> int:
-        pass  # Удалите `pass` и пишите ваш код
+        return len(self._cross_border_calls)

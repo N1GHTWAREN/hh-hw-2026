@@ -118,3 +118,44 @@ def test_register_call_counts_calls_between_local_and_foreign_users() -> None:
 
     assert switchboard.get_active_calls_count() == 3
     assert switchboard.get_cross_border_calls_count() == 1
+
+
+def test_initial_cross_border_calls_count_is_zero():
+    switchboard = Switchboard()
+
+    assert switchboard.get_cross_border_calls_count() == 0
+
+
+def test_cross_border_count_without_cross_border_calls():
+    switchboard = Switchboard()
+
+    switchboard.register_call(
+        "3,Petr Petrov,+78880000000,4,Maria Petrova,+79991112233"
+    )
+    switchboard.register_call(
+        "5,Jane Doe,+33123456789,6,Alex Doe,+442012345678"
+    )
+
+    assert switchboard.get_cross_border_calls_count() == 0
+
+
+def test_cross_border_register_calls_accumulate():
+    switchboard = Switchboard()
+
+    switchboard.register_call(
+        "1,Ivan Ivanov,+79990000000,2,Petr Petrov,+78880000000"
+    )
+
+    assert switchboard.get_cross_border_calls_count() == 0
+
+    switchboard.register_call(
+        "3,John Smith,+75551234567,4,Jane Doe,+33123456789"
+    )
+
+    assert switchboard.get_cross_border_calls_count() == 1
+
+    switchboard.register_call(
+        "5,Maria Petrova,+79991112233,6,Alex Doe,+442012345678"
+    )
+
+    assert switchboard.get_cross_border_calls_count() == 2
