@@ -69,6 +69,40 @@ def test_register_call_counts_active_calls() -> None:
     assert switchboard.get_active_calls_count() == 2
 
 
+def test_initial_active_calls_count_is_zero():
+    switchboard = Switchboard()
+
+    assert switchboard.get_active_calls_count() == 0
+
+
+def test_register_calls_accumulate():
+    switchboard = Switchboard()
+
+    switchboard.register_call(
+        "1,Ivan Ivanov,+79990000000,2,Petr Petrov,+78880000000"
+    )
+
+    assert switchboard.get_active_calls_count() == 1
+
+    switchboard.register_call(
+        "3,John Smith,+15551234567,4,Jane Doe,+33123456789"
+    )
+
+    assert switchboard.get_active_calls_count() == 2
+
+
+def test_multiple_switchboards_independent():
+    s1 = Switchboard()
+    s2 = Switchboard()
+
+    s1.register_call(
+        "1,Ivan Ivanov,+79990000000,2,Petr Petrov,+78880000000"
+    )
+
+    assert s1.get_active_calls_count() == 1
+    assert s2.get_active_calls_count() == 0
+
+
 def test_register_call_counts_calls_between_local_and_foreign_users() -> None:
     switchboard = Switchboard()
 

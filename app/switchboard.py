@@ -30,10 +30,12 @@ class Switchboard:
         caller_id, caller_name, caller_phone, receiver_id, receiver_name, receiver_phone = raw_call.split(',')
         caller = create_user(caller_id, caller_name, caller_phone)
         receiver = create_user(receiver_id, receiver_name, receiver_phone)
-        return ActiveCall(caller, receiver)
+        call = ActiveCall(caller, receiver)
+        self._active_calls.append(call)
+        return call
 
     def get_active_calls_count(self) -> int:
-        pass  # Удалите `pass` и пишите ваш код
+        return len(self._active_calls)
 
     def get_cross_border_calls_count(self) -> int:
         pass  # Удалите `pass` и пишите ваш код
