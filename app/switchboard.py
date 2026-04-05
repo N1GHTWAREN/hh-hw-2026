@@ -23,13 +23,14 @@ class Switchboard:
         self._active_calls: list[ActiveCall] = []
 
     def register_call(self, raw_call: str) -> ActiveCall:
-        '''
-        Метод должен принимать только 1 строку и возвращать класс ActiveCall.
-        На входе строка должна быть вида "caller_id,caller_name,caller_phone,receiver_id,receiver_name,receiver_phone"
-
-        Например: "1001,Иван Петров,+71234567890,1085,Адам Яковлев,+71255556666"
-        '''
-        pass  # Удалите `pass` и пишите ваш код
+        from app import LocalUser, ForeignUser
+        def create_user(user_id, name, phone):
+            cls = LocalUser if phone[:2] == LOCAL_PHONE_PREFIX else ForeignUser
+            return cls(int(user_id), name, phone)
+        caller_id, caller_name, caller_phone, receiver_id, receiver_name, receiver_phone = raw_call.split(',')
+        caller = create_user(caller_id, caller_name, caller_phone)
+        receiver = create_user(receiver_id, receiver_name, receiver_phone)
+        return ActiveCall(caller, receiver)
 
     def get_active_calls_count(self) -> int:
         pass  # Удалите `pass` и пишите ваш код
