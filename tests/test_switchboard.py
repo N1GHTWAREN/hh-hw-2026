@@ -159,3 +159,81 @@ def test_cross_border_register_calls_accumulate():
     )
 
     assert switchboard.get_cross_border_calls_count() == 2
+
+
+def test_missing_fields_raises():
+    switchboard = Switchboard()
+
+    with pytest.raises(ValueError, match="Ожидалось 6"):
+        switchboard.register_call("1,Ivan Ivanov,+79990000000,2,John Smith")
+
+
+
+def test_extra_fields_raises():
+    switchboard = Switchboard()
+
+    with pytest.raises(ValueError, match="Ожидалось 6"):
+        switchboard.register_call("1,Ivan Ivanov,+79990000000,2,John Smith,+15551234567,дополнительная_информация")
+
+
+def test_non_numeric_caller_id_raises():
+    switchboard = Switchboard()
+
+    with pytest.raises(ValueError, match="caller_id"):
+        switchboard.register_call("abc,Ivan Ivanov,+79990000000,2,John Smith,+15551234567")
+
+
+def test_negative_caller_id_raises():
+    switchboard = Switchboard()
+
+    with pytest.raises(ValueError, match="caller_id"):
+        switchboard.register_call("-1,Ivan Ivanov,+79990000000,2,John Smith,+15551234567")
+
+
+def test_non_numeric_receiver_id_raises():
+    switchboard = Switchboard()
+
+    with pytest.raises(ValueError, match="receiver_id"):
+        switchboard.register_call("1,Ivan Ivanov,+79990000000,xyz,John Smith,+15551234567")
+
+
+def test_single_word_caller_name_raises():
+    switchboard = Switchboard()
+
+    with pytest.raises(ValueError, match="caller_name"):
+        switchboard.register_call("1,Ivan,+79990000000,2,John Smith,+15551234567")
+
+
+def test_name_with_digits_raises():
+    switchboard = Switchboard()
+
+    with pytest.raises(ValueError, match="caller_name"):
+        switchboard.register_call("1,Ivan123 Ivanov,+79990000000,2,John Smith,+15551234567")
+
+
+def test_empty_name_raises():
+    switchboard = Switchboard()
+
+    with pytest.raises(ValueError, match="caller_name"):
+        switchboard.register_call("1,,+79990000000,2,John Smith,+15551234567")
+
+
+def test_phone_with_letters_raises():
+    switchboard = Switchboard()
+
+    with pytest.raises(ValueError, match="caller_phone"):
+        switchboard.register_call("1,Ivan Ivanov,+7ABCDEFGH,2,John Smith,+15551234567")
+
+
+def test_too_short_phone_raises():
+    switchboard = Switchboard()
+
+    with pytest.raises(ValueError, match="caller_phone"):
+        switchboard.register_call("1,Ivan Ivanov,+7123,2,John Smith,+15551234567")
+
+
+def test_receiver_phone_invalid_raises():
+    switchboard = Switchboard()
+
+    with pytest.raises(ValueError, match="receiver_phone"):
+        switchboard.register_call("1,Ivan Ivanov,+79990000000,2,John Smith,+1ABC")
